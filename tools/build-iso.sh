@@ -13,6 +13,9 @@ mkdir -p "$ISO_ROOT/boot/grub"
 cp "$OUT/vmlinuz" "$ISO_ROOT/boot/vmlinuz"
 cp "$OUT/initramfs.cpio.gz" "$ISO_ROOT/boot/initramfs.cpio.gz"
 cat > "$ISO_ROOT/boot/grub/grub.cfg" <<'EOF'
+serial --unit=0 --speed=115200
+terminal_input serial
+terminal_output serial
 set timeout=2
 set default=0
 menuentry "IntentOS 0.1 Developer Preview" {
