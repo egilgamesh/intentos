@@ -18,7 +18,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y gcc libc6-dev cpio qemu-system-x86 linux-image-generic
-      - name: Build kernel + initramfs
+      - name: Validate native init program\n        run: bash tests/test-init.sh\n      - name: Build kernel + initramfs
         run: |
           KERNEL_IMAGE="$(find /boot -maxdepth 1 -name 'vmlinuz-*' | sort -V | tail -1)"
           test -n "$KERNEL_IMAGE"
