@@ -1,0 +1,13 @@
+#!/bin/sh
+# Minimal boot identity smoke test; not an AI service.
+case "$1" in
+  start)
+    echo "======================================"
+    echo " IntentOS developer preview (Linux)"
+    echo " Kernel backend: Linux"
+    echo " IntentMind: not installed"
+    echo "======================================"
+    ;;
+  stop) ;;
+esac
+exit 0
