@@ -1,0 +1,33 @@
+name: Bootable kernel smoke test
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+jobs:
+  boot:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install build and emulator dependencies
+        run: sudo apt-get update && sudo apt-get install -y gcc libc6-dev cpio qemu-system-x86 linux-image-generic
+      - name: Build bootable kernel and initramfs
+        run: |
+          KERNEL_IMAGE="$(find /boot -maxdepth 1 -name 'vmlinuz-*' | sort -V | tail -1)"
+          KERNEL_IMAGE="$KERNEL_IMAGE" bash tools/build-bootable-prototype.sh
+      - name: Boot in QEMU and check init reached
+        run: |
+          set +e
+          timeout 90s qemu-system-x86_64 -m 512M -nographic -no-reboot -kernel build/bootable/vmlinuz -initrd build/bootable/initramfs.cpio.gz -append 'console=ttyS0 rdinit=/init panic=1' > boot.log 2>&1
+          rc=$?
+          set -e
+          cat boot.log
+          grep -q INTENTOS_BOOT_OK boot.log || { echo "Boot marker missing (QEMU exit $rc)"; exit 1; }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: intentos-bootable-x86_64
+          path: |
+            build/bootable/vmlinuz
+            build/bootable/initramfs.cpio.gz
+            boot.log
