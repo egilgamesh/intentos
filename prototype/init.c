@@ -29,7 +29,7 @@ int main(void) {
     line[strcspn(line,"\r\n")] = 0;
     if (!strcmp(line,"help")) puts("help status uname reboot poweroff");
     else if (!strcmp(line,"status")) puts("IntentOS kernel running; IntentMind not installed");
-    else if (!strcmp(line,"uname")) { struct utsname u; if (uname(&u) == 0) printf("%s %s %s %s\\n", u.sysname, u.release, u.machine, u.nodename); else perror("uname"); }
+    else if (!strcmp(line,"uname")) { struct utsname u; if (uname(&u) == 0) printf("%s %s %s %s\n", u.sysname, u.release, u.machine, u.nodename); else perror("uname"); }
     else if (!strcmp(line,"reboot")) { sync(); reboot(RB_AUTOBOOT); }
     else if (!strcmp(line,"poweroff")) { sync(); reboot(RB_POWER_OFF); }
     else if (*line) puts("Unknown command. Type help.");
