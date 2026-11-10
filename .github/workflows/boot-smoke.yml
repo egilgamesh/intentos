@@ -24,17 +24,8 @@ jobs:
           test -n "$KERNEL_IMAGE"
           sudo env KERNEL_IMAGE="$KERNEL_IMAGE" bash tools/build-bootable-prototype.sh
           sudo chown -R "$USER:$USER" build/bootable
-      - name: Boot QEMU and verify PID 1
-        run: |
-          set +e
-          timeout 120s qemu-system-x86_64 -m 512M -nographic -no-reboot \
-            -kernel build/bootable/vmlinuz \
-            -initrd build/bootable/initramfs.cpio.gz \
-            -append 'console=ttyS0 rdinit=/init panic=1' > boot.log 2>&1
-          rc=$?
-          set -e
-          tail -100 boot.log
-          grep -q 'INTENTOS_BOOT_OK' boot.log || { echo "Boot marker missing; QEMU exit: $rc"; exit 1; }
+      - name: Boot QEMU and verify interactive console
+        run: python3 tests/boot_qemu.py
       - uses: actions/upload-artifact@v4
         if: always()
         with:
