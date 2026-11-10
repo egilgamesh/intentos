@@ -17,7 +17,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y gcc libc6-dev cpio qemu-system-x86 linux-image-generic
+          sudo apt-get install -y gcc libc6-dev cpio qemu-system-x86 linux-image-generic grub-common grub-pc-bin xorriso mtools
       - name: Validate native init program\n        run: bash tests/test-init.sh\n      - name: Build kernel + initramfs
         run: |
           KERNEL_IMAGE="$(find /boot -maxdepth 1 -name 'vmlinuz-*' | sort -V | tail -1)"
@@ -26,6 +26,16 @@ jobs:
           sudo chown -R "$USER:$USER" build/bootable
       - name: Boot QEMU and verify interactive console
         run: python3 tests/boot_qemu.py
+      - name: Package bootable ISO
+        run: bash tools/build-iso.sh
+      - name: Smoke-test ISO boot in QEMU
+        run: |
+          set +e
+          timeout 120s qemu-system-x86_64 -machine q35,accel=tcg -m 512M -nographic -no-reboot -boot d -cdrom build/bootable/intentos-0.1-x86_64.iso > iso-boot.log 2>&1
+          rc=$?
+          set -e
+          tail -100 iso-boot.log
+          grep -q INTENTOS_BOOT_OK iso-boot.log || { echo "ISO boot failed (exit $rc)"; exit 1; }
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -34,4 +44,6 @@ jobs:
             build/bootable/vmlinuz
             build/bootable/initramfs.cpio.gz
             boot.log
+            iso-boot.log
+            build/bootable/intentos-0.1-x86_64.iso
           if-no-files-found: warn
