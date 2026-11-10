@@ -1,0 +1,15 @@
+# Rust
+target/
+**/*.rs.bk
+# Build and emulator artifacts
+build/
+dist/
+*.img
+*.iso
+*.qcow2
+*.elf
+*.bin
+# Editors
+.idea/
+.vscode/
+.DS_Store
