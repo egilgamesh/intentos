@@ -33,5 +33,6 @@ int main(void) {
     else if (!strcmp(line,"reboot")) { sync(); reboot(RB_AUTOBOOT); }
     else if (!strcmp(line,"poweroff")) { sync(); reboot(RB_POWER_OFF); }
     else if (*line) puts("Unknown command. Type help.");
+    fflush(stdout);
   }
 }
