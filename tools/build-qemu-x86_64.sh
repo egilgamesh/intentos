@@ -3,7 +3,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 BUILDROOT_DIR="$ROOT/build/buildroot"
-BUILDROOT_TAG="2026.02.1"
+BUILDROOT_TAG="2025.02.8"
 
 command -v git >/dev/null || { echo "git required" >&2; exit 1; }
 command -v make >/dev/null || { echo "make required" >&2; exit 1; }
@@ -16,6 +16,7 @@ fi
 cd "$BUILDROOT_DIR"
 make qemu_x86_64_defconfig
 ./utils/config --set-str BR2_ROOTFS_OVERLAY "$ROOT/images/pc-x86_64/rootfs-overlay"
+./utils/config --set-str BR2_ROOTFS_POST_BUILD_SCRIPT "$ROOT/tools/post-build.sh"
 make olddefconfig
 make
 
