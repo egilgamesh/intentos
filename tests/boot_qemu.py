@@ -9,19 +9,33 @@ import time
 
 root = pathlib.Path(__file__).resolve().parents[1]
 out = root / "build" / "bootable"
-log_path = root / "boot.log"
+log_path = root / ("iso-boot.log" if os.environ.get("BOOT_MODE") == "iso" else "boot.log")
 kernel = out / "vmlinuz"
 initrd = out / "initramfs.cpio.gz"
 for path in (kernel, initrd):
     if not path.is_file():
         raise SystemExit(f"Missing image: {path}")
 
-cmd = [
-    "qemu-system-x86_64", "-machine", "q35,accel=tcg",
-    "-m", "512M", "-nographic", "-no-reboot",
-    "-kernel", str(kernel), "-initrd", str(initrd),
-    "-append", "console=ttyS0 rdinit=/init panic=1",
-]
+mode = os.environ.get("BOOT_MODE", "kernel")
+if mode == "kernel":
+    cmd = [
+        "qemu-system-x86_64", "-machine", "q35,accel=tcg",
+        "-m", "512M", "-nographic", "-no-reboot",
+        "-kernel", str(kernel), "-initrd", str(initrd),
+        "-append", "console=ttyS0 rdinit=/init panic=1",
+    ]
+elif mode == "iso":
+    iso = out / "intentos-0.1-x86_64.iso"
+    if not iso.is_file():
+        raise SystemExit(f"Missing ISO: {iso}")
+    cmd = [
+        "qemu-system-x86_64", "-machine", "q35,accel=tcg",
+        "-m", "512M", "-nographic", "-no-reboot",
+        "-boot", "d", "-cdrom", str(iso),
+    ]
+else:
+    raise SystemExit(f"Unknown BOOT_MODE: {mode}")
+
 deadline = time.monotonic() + int(os.environ.get("BOOT_TIMEOUT", "120"))
 proc = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                         stderr=subprocess.STDOUT, bufsize=0)
