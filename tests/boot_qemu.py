@@ -48,7 +48,9 @@ try:
         for key, _ in selector.select(timeout=0.5):
             data = os.read(key.fileobj.fileno(), 65536)
             if not data:
-                break
+                if proc.poll() is not None:
+                    raise RuntimeError(f"QEMU exited unexpectedly with code {proc.returncode} (phase {phase})")
+                continue
             log.extend(data)
             recent = bytes(log)
             if phase == 0 and b"intentos> " in recent:
@@ -81,3 +83,4 @@ finally:
             proc.wait()
     log_path.write_bytes(log)
     sys.stdout.buffer.write(log[-12000:])
+    sys.stdout.buffer.flush()
