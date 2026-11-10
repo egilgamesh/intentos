@@ -42,11 +42,11 @@ try:
                 proc.stdin.write(b"status\n")
                 proc.stdin.flush()
                 phase = 1
-            elif phase == 1 and b"IntentOS kernel running; IntentMind not installed" in recent:
+            elif phase == 1 and b"IntentOS kernel running; IntentMind not installed" in recent and recent.count(b"intentos> ") >= 2:
                 proc.stdin.write(b"help\n")
                 proc.stdin.flush()
                 phase = 2
-            elif phase == 2 and b"help status uname reboot poweroff" in recent:
+            elif phase == 2 and recent.count(b"help status uname reboot poweroff") >= 2 and recent.count(b"intentos> ") >= 3:
                 proc.stdin.write(b"poweroff\n")
                 proc.stdin.flush()
                 phase = 3
