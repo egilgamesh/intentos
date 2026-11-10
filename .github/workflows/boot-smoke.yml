@@ -28,7 +28,7 @@ jobs:
         run: python3 tests/boot_qemu.py
       - name: Package bootable ISO
         run: bash tools/build-iso.sh
-      - name: Verify ISO boot and interactive console
+      - name: Validate ISO output\n        run: |\n          test -s build/bootable/intentos-0.1-x86_64.iso\n          file build/bootable/intentos-0.1-x86_64.iso\n      - name: Verify ISO boot and interactive console
         run: BOOT_MODE=iso python3 tests/boot_qemu.py
       - name: Generate SHA256 checksums
         run: |
