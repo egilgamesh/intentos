@@ -2,7 +2,7 @@
 
 **IntentOS** is an experimental, AI-native, general-purpose operating system for PCs and smartphones.
 
-> Status: architecture and early kernel research. Not bootable yet.
+> Status: experimental Linux-based boot prototype with kernel/initramfs and GRUB ISO build paths. End-to-end QEMU boot verification is still pending.
 
 ## Principles
 - The OS works without AI; AI is a user-space system service.
@@ -20,10 +20,21 @@
 - **IntentMind** — unprivileged AI inference, planning, and workflow execution.
 - **IntentUI** — adaptive compositor and shell.
 
-See [architecture](docs/architecture/overview.md), [ADR 0001](docs/adr/0001-microkernel.md), and [roadmap](docs/roadmap.md).
+See [architecture](docs/architecture/overview.md), [ADR 0002: Linux first](docs/adr/0002-linux-first.md), [ADR 0001: microkernel research](docs/adr/0001-microkernel.md), and [roadmap](docs/roadmap.md).
 
-## First milestone
-Boot a minimal x86-64 kernel in QEMU through UEFI, initialize memory and interrupts, start a user-space supervisor, and print a verified boot message. This repository does **not** yet contain a working kernel.
+## First milestone: IntentOS 0.1 boot prototype
+IntentOS v1 uses an existing Linux kernel and our own minimal PID 1. This is a bootable-image prototype, not a newly written kernel, and is not yet a released OS.
+
+On a supported Linux build host:
+
+```sh
+bash tools/build-bootable-prototype.sh
+bash tools/run-qemu-x86_64.sh
+# To package an ISO (requires grub-mkrescue and xorriso):
+bash tools/build-iso.sh
+```
+
+See [boot guide](docs/boot.md) and [release gates](docs/releases/0.1.0.md).
 
 ## Contributing
 Read [CONTRIBUTING.md](CONTRIBUTING.md). Security issues should be reported privately; see [SECURITY.md](SECURITY.md).
