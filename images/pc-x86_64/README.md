@@ -1,28 +1,28 @@
 # x86-64 bootable developer image
 
-First prototype uses Buildroot's upstream QEMU x86-64 board configuration and a minimal IntentOS root filesystem overlay. It is a **Linux-based boot prototype**, not a complete IntentOS shell or an independently written kernel.
+First prototype uses Buildroot's upstream QEMU x86-64 configuration and a minimal IntentOS root filesystem overlay. This is a **Linux-based boot prototype**, not a complete IntentOS shell or new kernel.
 
 ## Prerequisites
-Linux build host, git, make, gcc/g++, standard Buildroot host dependencies, and QEMU x86-64. Allow several GB of disk and time for compilation.
+Linux build host, git, make, gcc/g++, standard Buildroot dependencies, and QEMU x86-64. Allow several GB of disk and compilation time.
 
 ## Build
 From the repository root:
 
 ```sh
-./tools/build-qemu-x86_64.sh
+bash tools/build-qemu-x86_64.sh
 ```
 
-The script checks out Buildroot 2026.02.1 and builds its QEMU x86-64 image with our rootfs overlay. Buildroot release and board config availability should be verified before relying on this script; if the tag is unavailable, update the pinned version after testing.
+The script currently pins Buildroot 2025.02.8; the pin and Buildroot board compatibility must be validated in CI before treating this as reproducible.
 
 ## Run
-Check `build/buildroot/output/images/` for the generated image and QEMU launch script. On supported Buildroot board configurations:
+Check `build/buildroot/output/images/` for the generated images and launch script:
 
 ```sh
 cd build/buildroot/output/images
 ./start-qemu.sh
 ```
 
-If no launch script is generated, use the QEMU command documented by the chosen Buildroot board configuration.
+If a launch script is not generated, use the QEMU command from the selected Buildroot board configuration.
 
 ## Expected result
-Linux boots into a minimal console; the IntentOS boot banner appears. This is a foundational smoke test only.
+A minimal Linux console with the IntentOS developer-preview boot banner. The build has not yet been executed or verified by CI.
