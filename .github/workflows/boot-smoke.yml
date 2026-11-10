@@ -28,14 +28,12 @@ jobs:
         run: python3 tests/boot_qemu.py
       - name: Package bootable ISO
         run: bash tools/build-iso.sh
-      - name: Smoke-test ISO boot in QEMU
+      - name: Verify ISO boot and interactive console
+        run: BOOT_MODE=iso python3 tests/boot_qemu.py
+      - name: Generate SHA256 checksums
         run: |
-          set +e
-          timeout 120s qemu-system-x86_64 -machine q35,accel=tcg -m 512M -nographic -no-reboot -boot d -cdrom build/bootable/intentos-0.1-x86_64.iso > iso-boot.log 2>&1
-          rc=$?
-          set -e
-          tail -100 iso-boot.log
-          grep -q INTENTOS_BOOT_OK iso-boot.log || { echo "ISO boot failed (exit $rc)"; exit 1; }
+          cd build/bootable
+          sha256sum vmlinuz initramfs.cpio.gz intentos-0.1-x86_64.iso > SHA256SUMS
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -46,4 +44,5 @@ jobs:
             boot.log
             iso-boot.log
             build/bootable/intentos-0.1-x86_64.iso
+            build/bootable/SHA256SUMS
           if-no-files-found: warn
