@@ -16,7 +16,6 @@ fi
 cd "$BUILDROOT_DIR"
 make qemu_x86_64_defconfig
 ./utils/config --set-str BR2_ROOTFS_OVERLAY "$ROOT/images/pc-x86_64/rootfs-overlay"
-./utils/config --set-str BR2_ROOTFS_POST_BUILD_SCRIPT "$ROOT/tools/post-build.sh"
 make olddefconfig
 make
 
